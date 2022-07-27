@@ -5,7 +5,8 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
 
-    dir_uploads: '%kernel.project_dir%\public'
+    dir_public: '%kernel.project_dir%\public'
+    dir_uploads: '%dir_public%\uploads'
     dir_pdv_list_path: '%dir_uploads%\pdv\'
 
     url_uploads: '/uploads'
