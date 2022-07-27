@@ -26,7 +26,7 @@ class DefaultController extends AbstractController
     {
         $city = json_decode($req->getContent(), true);
         $city = str_replace(' ', '+', strtolower($city['city']));
-        $req = sprintf('https://api-adresse.data.gouv.fr/search/?q=%s', $city);
+        $req = sprintf($this->getParameter('api_address'), $city);
         
         // resultat de l'appel api gouv
         
