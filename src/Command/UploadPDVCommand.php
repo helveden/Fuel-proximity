@@ -12,6 +12,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use App\Service\PdvFactory;
+
 class UploadPDVCommand extends Command
 {
     protected static $defaultName = 'UploadPDV';
@@ -19,8 +21,9 @@ class UploadPDVCommand extends Command
 
     protected $container;
 
-    public function __construct(ContainerInterface $container) {
+    public function __construct(ContainerInterface $container, PdvFactory $pdvfacto) {
         $this->container = $container;
+        $this->pdvfacto = $pdvfacto;
         parent::__construct();
     }
 
@@ -33,16 +36,18 @@ class UploadPDVCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        ini_set('memory_limit', '-1');
 
         $io = new SymfonyStyle($input, $output);
         
-
         $io->section('You upload file !');
 
         $url = $this->container->getParameter('url_fuel_url_zip'); // URL of what you wan to download
         $zipFile = "PrixCarburants_instantane.zip"; // Rename .zip file
         $extractDir = $this->container->getParameter('dir_pdv_list_path'); // Name of the directory where files are extracted
         $zipResource = fopen($zipFile, "w");
+
+        $xmlFile = $this->container->getParameter('path_xml_file');
 
         $pathFile = $extractDir.$zipFile;
 
@@ -79,7 +84,8 @@ class UploadPDVCommand extends Command
         $zip = new \ZipArchive;
 
         if($zip->open($pathFile) != "true"){
-            echo "Error :- Unable to open the Zip File";
+            $io->warning('Error :- Unable to open the Zip File');
+            die();
         } 
 
         /* Extract Zip File */
@@ -89,6 +95,19 @@ class UploadPDVCommand extends Command
 
         unlink($pathFile);
         $io->success('File delete !');
+
+        // XML
+        $contentXML = simplexml_load_file($xmlFile);
+        $pdvs = [];
+        foreach($contentXML as $pdv) {
+            $pdvs[] = json_encode($pdv);
+        }
+
+        $io->caution('Count pdvs ' . count($pdvs));
+
+        $this->pdvfacto->saveCommandAll($pdvs, $io);
+
+        $io->success('End save !');
 
         return Command::SUCCESS;
     }

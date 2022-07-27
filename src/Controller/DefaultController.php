@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 class DefaultController extends AbstractController
@@ -13,27 +14,22 @@ class DefaultController extends AbstractController
      */
     public function index(): Response
     {
- 
-        // https://gist.github.com/thagxt/d9b4388156aeb7f1d66b108d728470d2 CURLOPT_RETURNTRANSFER
-        
-        die;
-        /* Open the Zip file */
-        $zip = new \ZipArchive;
-        $extractPath = $extractDir;
-
-        if($zip->open($zipFile) != "true"){
-            echo "Error :- Unable to open the Zip File";
-        } 
-
-        /* Extract Zip File */
-        $zip->extractTo($extractPath);
-        $zip->close();
-        
-
-        
-        die;
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
         ]);
+    }
+    
+    /**
+     * @Route("/get-pdv", name="app_get_pdv")
+     */
+    public function getPdv(Request $req)
+    {
+        $city = json_decode($req->getContent(), true);
+        $city = str_replace(' ', '+', strtolower($city['city']));
+        $req = sprintf('https://api-adresse.data.gouv.fr/search/?q=%s', $city);
+        
+        // resultat de l'appel api gouv
+        
+        return $this->json(json_decode(file_get_contents($req), true));
     }
 }

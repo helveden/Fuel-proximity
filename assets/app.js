@@ -10,3 +10,16 @@ import './styles/app.css';
 
 // start the Stimulus application
 import './bootstrap';
+
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+
+import Default from './components/Default';
+
+
+// Default
+if(document.getElementById('default') !== null) {
+    var root = createRoot(document.getElementById('default'));
+    var elt = <Default />;
+    root.render(elt);
+}
