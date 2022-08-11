@@ -13,7 +13,7 @@ parameters:
     url_pdv_list: '%url_uploads%/pdv'
     url_fuel_url_zip: 'https://donnees.roulez-eco.fr/opendata/instantane' # Récupération des données
 
-    api_address: 'https://api-adresse.data.gouv.fr/search/?q=%s'
+    api_address: 'https://api-adresse.data.gouv.fr/search/?type=municipality&q=%s'
 
     filename: 'PrixCarburants_instantane'
     xml_file: '%filename%.xml'

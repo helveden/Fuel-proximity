@@ -7,6 +7,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
+use Doctrine\Persistence\ManagerRegistry;
+
+use App\Entity\Pdv;
+
 class DefaultController extends AbstractController
 {
     /**
@@ -20,9 +24,9 @@ class DefaultController extends AbstractController
     }
     
     /**
-     * @Route("/get-pdv", name="app_get_pdv")
+     * @Route("/get-cities", name="app_get_cities")
      */
-    public function getPdv(Request $req)
+    public function getCities(Request $req)
     {
         $city = json_decode($req->getContent(), true);
         $city = str_replace(' ', '+', strtolower($city['city']));
@@ -31,5 +35,21 @@ class DefaultController extends AbstractController
         // resultat de l'appel api gouv
         
         return $this->json(json_decode(file_get_contents($req), true));
+    }
+    
+    /**
+     * @Route("/get-pdvs", name="app_get_pdvs")
+     */
+    public function getPdvs(Request $req, ManagerRegistry $doctrine)
+    {        
+        $context = json_decode($req->getContent(), true);
+        $context = $context['context'];
+
+        $postalcode = substr($context, 0, 2);
+        $postalcode .= '%';
+        
+        $pdvs = $doctrine->getRepository(Pdv::class)->findByPostcode($postalcode);
+        
+        return $this->json($pdvs);
     }
 }

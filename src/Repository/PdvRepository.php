@@ -54,6 +54,17 @@ class PdvRepository extends ServiceEntityRepository
 //        ;
 //    }
 
+public function findByPostcode($value): array
+{
+    return $this->createQueryBuilder('p')
+        ->andWhere('p.postalcode LIKE :postalcode')
+        ->setParameter('postalcode', $value)
+        // ->orderBy('p.id', 'ASC')
+        ->getQuery()
+        ->getResult()
+    ;
+}
+
 //    public function findOneBySomeField($value): ?Pdv
 //    {
 //        return $this->createQueryBuilder('p')

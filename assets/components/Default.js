@@ -9,11 +9,16 @@ class Default extends Component {
         super(props);
         this.state = {
             city: "",
-            results: []
+            results: [],
+            openPdv: false,
+            pdvs: [],
         }
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
+
+        ///
+        this.processOpenPdv = this.processOpenPdv.bind(this);
     }
     
     
@@ -41,7 +46,7 @@ class Default extends Component {
 
     async handleSubmit(event) {
         event.preventDefault();
-        var results = await axios.post('/get-pdv', this.state)
+        var results = await axios.post('/get-cities', this.state)
         .then(function(response) {
             return response;
         });
@@ -54,11 +59,27 @@ class Default extends Component {
         });
     }
 
+    async processOpenPdv(city) {
+        
+        var results = await axios.post('/get-pdvs', {context: city.context})
+        .then(function(response) {
+            return response;
+        });
+
+        console.log(results)
+
+        this.setState({
+            openPdv: true,
+            pdvs: results.data
+        });
+    }
+
     render() {
 
         const results = this.state.results
-        
-        console.log(results)
+        const openPdv = this.state.openPdv
+        const pdvs = this.state.pdvs
+
         return (
             <>
                 <form
@@ -81,11 +102,28 @@ class Default extends Component {
                     <tbody>
                         {results.map((feature, index) => {
                             return <tr key={index}>
-                                <td>{feature.properties.label}</td>
+                                <td><button type="button" onClick={() => this.processOpenPdv(feature.properties)}>{feature.properties.city}</button></td>
+                                <td>{feature.properties.postcode}</td>
+                                <td>{feature.properties.context}</td>
                             </tr>
                         })}
                     </tbody>
                 </table>
+                { openPdv ? 
+                    <section>
+                        <h6>Pdvs</h6>
+                        <table>
+                            <tbody>
+                                {pdvs.map((pdv, index) => {
+                                    return <tr key={index}>
+                                        <td>{pdv.datas.ville}</td>
+                                    </tr>
+                                })}
+                            </tbody>
+                        </table>
+                    </section>
+                : null
+                }
             </>  
         ) 
     }
