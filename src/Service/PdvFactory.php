@@ -58,6 +58,8 @@ class PdvFactory extends AbstractFactory {
             $pdv->setLatitude($pdvDatas['@attributes']['latitude']);
             $pdv->setLongitude($pdvDatas['@attributes']['longitude']);
             $pdv->setPostalcode($pdvDatas['@attributes']['cp']);
+            $pdv->setAdresse($pdvDatas['adresse']);
+            $pdv->setCity($pdvDatas['ville']); 
         endif;
 
         $pdv->setDatas($pdvDatas);
