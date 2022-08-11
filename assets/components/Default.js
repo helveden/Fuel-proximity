@@ -82,41 +82,69 @@ class Default extends Component {
 
         return (
             <>
-                <form
-                    onSubmit={this.handleSubmit}
-                >
-                    <input
-                        type="text" 
-                        className="form-control" 
-                        placeholder="Ville"
-                        name="city"
-                        value={this.state.city}
-                        onChange={this.handleChange}
-                    />
-                    
-                    <div className="form-group">
-                        <button type="submit" className='btn btn-info'>Ok</button>
-                    </div>
-                </form>
-                <table>
-                    <tbody>
-                        {results.map((feature, index) => {
-                            return <tr key={index}>
-                                <td><button type="button" onClick={() => this.processOpenPdv(feature.properties)}>{feature.properties.city}</button></td>
-                                <td>{feature.properties.postcode}</td>
-                                <td>{feature.properties.context}</td>
-                            </tr>
-                        })}
-                    </tbody>
-                </table>
-                { openPdv ? 
+            
+            { !openPdv ? 
+                <>
+                    <form
+                        onSubmit={this.handleSubmit}
+                    >
+                        <input
+                            type="text" 
+                            className="form-control" 
+                            placeholder="Ville"
+                            name="city"
+                            value={this.state.city}
+                            onChange={this.handleChange}
+                        />
+                        
+                        <div className="form-group">
+                            <button type="submit" className='btn btn-info'>Ok</button>
+                        </div>
+                    </form>
+                    <table>
+                        <tbody>
+                            {results.map((feature, index) => {
+                                return <tr key={index}>
+                                    <td><button type="button" onClick={() => this.processOpenPdv(feature.properties)}>{feature.properties.city}</button></td>
+                                    <td>{feature.properties.postcode}</td>
+                                    <td>{feature.properties.context}</td>
+                                </tr>
+                            })}
+                        </tbody>
+                    </table>
+                </>
+                : openPdv ?
                     <section>
                         <h6>Pdvs</h6>
                         <table>
                             <tbody>
                                 {pdvs.map((pdv, index) => {
+                                    
+                                    // console.log(pdv.datas.prix)
                                     return <tr key={index}>
                                         <td>{pdv.datas.ville}</td>
+                                        <td>{pdv.datas.adresse}</td>
+                                        <td>
+                                            <ul className='price-list'>
+                                                { typeof pdv.datas.prix !== 'undefined' ?
+                                                    <>
+                                                        {pdv.datas.prix.map((price, jndex) => {
+                                                            var val = Object.values(pdv.datas.prix)[jndex];
+                                                            var val = Object.values(val)[0];
+                                                            
+                                                            var li = '';
+                                                            { typeof val !== 'undefined' ?
+                                                                li = <li key={jndex}>{val.nom.toLowerCase()} - {val.valeur}</li>
+                                                                : null
+                                                            }
+                                                            return li;
+                                                        
+                                                        })}
+                                                    </>
+                                                : null
+                                                }
+                                            </ul>
+                                        </td>
                                     </tr>
                                 })}
                             </tbody>

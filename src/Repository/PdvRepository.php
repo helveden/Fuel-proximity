@@ -59,7 +59,7 @@ public function findByPostcode($value): array
     return $this->createQueryBuilder('p')
         ->andWhere('p.postalcode LIKE :postalcode')
         ->setParameter('postalcode', $value)
-        // ->orderBy('p.id', 'ASC')
+        ->orderBy('p.city', 'ASC')
         ->getQuery()
         ->getResult()
     ;
